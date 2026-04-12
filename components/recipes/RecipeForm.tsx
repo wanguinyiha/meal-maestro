@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import { Clock, DollarSign, Image as ImageIcon, ListOrdered, Plus, Tag, Trash2, Users } from "lucide-react"
+import { GROCERY_CATEGORIES, type GroceryCategory } from "@/lib/grocery-categories"
 
 export type RecipeDifficulty = "easy" | "medium" | "hard"
 export type RecipeCategory = "breakfast" | "lunch" | "dinner"
@@ -472,11 +473,30 @@ export default function RecipeForm({
                                 </div>
                                 <div className="md:col-span-3 space-y-2">
                                   <Label>Category</Label>
-                                  <Input
-                                    value={ing.category}
-                                    onChange={(e) => updateIngredient(idx, { category: e.target.value })}
-                                    placeholder="e.g., pantry"
-                                  />
+                                  {(() => {
+                                    const current = (ing.category || "").trim()
+                                    const value = (current || "Other") as GroceryCategory | string
+                                    const inList = GROCERY_CATEGORIES.includes(value as GroceryCategory)
+                                    return (
+                                      <Select value={value} onValueChange={(v) => updateIngredient(idx, { category: v })}>
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Select category" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {!inList && current ? (
+                                            <SelectItem value={current}>
+                                              {current} (current)
+                                            </SelectItem>
+                                          ) : null}
+                                          {GROCERY_CATEGORIES.map((c) => (
+                                            <SelectItem key={c} value={c}>
+                                              {c}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                    )
+                                  })()}
                                 </div>
                                 <div className="md:col-span-2 space-y-2">
                                   <Label>Price (KES)</Label>
@@ -635,4 +655,3 @@ export default function RecipeForm({
     </div>
   )
 }
-

@@ -316,7 +316,7 @@ export default function ProfilePage() {
                   <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
                     <div><div className="font-semibold">{profile.current_streak}</div><div className="text-muted-foreground">Day Streak</div></div>
                     <div><div className="font-semibold">{profile.total_meals_planned}</div><div className="text-muted-foreground">Meals Planned</div></div>
-                    <div><div className="font-semibold">${profile.money_saved.toFixed(0)}</div><div className="text-muted-foreground">Money Saved</div></div>
+                    <div><div className="font-semibold">KES {profile.money_saved.toFixed(0)}</div><div className="text-muted-foreground">Money Saved</div></div>
                     <div><div className="font-semibold">{profile.favorite_recipes_count}</div><div className="text-muted-foreground">Favorite Recipes</div></div>
                   </div>
                 </div>
@@ -380,9 +380,9 @@ export default function ProfilePage() {
                   <CardTitle className="flex items-center gap-2"><DollarSign className="h-5 w-5 text-green-600" />Money Saved</CardTitle>
                 </CardHeader>
                 <CardContent className="text-center">
-                  <div className="text-3xl font-bold text-green-600 mb-2">${profile.money_saved.toFixed(0)}</div>
+                  <div className="text-3xl font-bold text-green-600 mb-2">KES {profile.money_saved.toFixed(0)}</div>
                   <div className="text-sm text-muted-foreground">this year</div>
-                  <p className="mt-3 text-xs text-muted-foreground">≈ $67 / month</p>
+                  <p className="mt-3 text-xs text-muted-foreground">≈ KES {Math.round(profile.money_saved / 12)} / month</p>
                 </CardContent>
               </Card>
             </div>

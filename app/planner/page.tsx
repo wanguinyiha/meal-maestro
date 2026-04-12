@@ -459,7 +459,7 @@ export default function PlannerPage() {
                         {recipe.calories || 0} cal
                       </div>
                       <div className="flex items-center gap-1">
-                        <DollarSign className="h-3 w-3" />${(recipe.cost || 0).toFixed(2)}
+                        <DollarSign className="h-3 w-3" />KES {(recipe.cost || 0).toFixed(2)}
                       </div>
                       <div className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
@@ -510,7 +510,7 @@ export default function PlannerPage() {
                     <div className="text-muted-foreground">Total Protein</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-primary">${getWeekTotals().cost.toFixed(2)}</div>
+                    <div className="text-2xl font-bold text-primary">KES {getWeekTotals().cost.toFixed(2)}</div>
                     <div className="text-muted-foreground">Total Cost</div>
                   </div>
                   <div className="text-center">
@@ -532,7 +532,7 @@ export default function PlannerPage() {
                     <CardTitle className="text-base">{day}</CardTitle>
                     <div className="text-xs text-muted-foreground space-y-1">
                       <div>{dayTotals.calories} cal</div>
-                      <div>${dayTotals.cost.toFixed(2)}</div>
+                      <div>KES {dayTotals.cost.toFixed(2)}</div>
                     </div>
                   </CardHeader>
                   <CardContent className="p-3 pt-0">
@@ -595,7 +595,7 @@ export default function PlannerPage() {
                                 </Button>
                                 <div className="font-medium text-foreground pr-4">{meal.title}</div>
                                 <div className="text-muted-foreground mt-1">
-                                  {meal.calories} cal • ${meal.cost.toFixed(2)}
+                                  {meal.calories} cal • KES {meal.cost.toFixed(2)}
                                 </div>
                               </div>
                             ))}

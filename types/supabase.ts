@@ -461,6 +461,38 @@ export type Database = {
           }
         ]
       }
+      external_recipe_imports: {
+        Row: {
+          user_id: string
+          external_source: string
+          external_id: string
+          recipe_id: string
+          created_at: string
+        }
+        Insert: {
+          user_id: string
+          external_source: string
+          external_id: string
+          recipe_id: string
+          created_at?: string
+        }
+        Update: {
+          user_id?: string
+          external_source?: string
+          external_id?: string
+          recipe_id?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "external_recipe_imports_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "recipes"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       meal_plans: {
         Row: {
           id: string

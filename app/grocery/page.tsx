@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Progress } from "@/components/ui/progress"
 import { ChefHat, ShoppingCart, Plus, DollarSign, Check, Trash2, Edit3 } from "lucide-react"
@@ -15,32 +16,22 @@ import type { Database } from "@/types/supabase"
 import { useAuth } from "@/app/AuthProvider"
 import DashboardLayout from "@/components/DashboardLayout"
 import { updateAchievementProgress, updateStreak } from "@/utils/achievements" //logActivity
+import { GROCERY_CATEGORIES, type GroceryCategory } from "@/lib/grocery-categories"
 
 type GroceryItem = {
   id: string
   name: string
   quantity: string
   price: number
-  category: Database["public"]["Tables"]["grocery_items"]["Row"]["category"]
+  category: GroceryCategory
   checked: boolean
   recipes: string[]
 }
 
-const categories: Database["public"]["Tables"]["grocery_items"]["Row"]["category"][] = [
-  "Produce",
-  "Meat & Seafood",
-  "Dairy & Eggs",
-  "Grains & Pantry",
-  "Frozen",
-  "Beverages",
-  "Snacks",
-  "Other",
-]
-
 export default function GroceryPage() {
   const [groceryList, setGroceryList] = useState<GroceryItem[]>([])
   const [newItem, setNewItem] = useState("")
-  const [newItemCategory, setNewItemCategory] = useState<Database["public"]["Tables"]["grocery_items"]["Row"]["category"]>("Other")
+  const [newItemCategory, setNewItemCategory] = useState<GroceryCategory>("Other")
   const [newItemQuantity, setNewItemQuantity] = useState("1")
   const [newItemPrice, setNewItemPrice] = useState(0)
   const [budget, setBudget] = useState(100)
@@ -375,12 +366,12 @@ export default function GroceryPage() {
   const totalItems = groceryList.length
   const progressPercentage = totalItems > 0 ? (checkedItems / totalItems) * 100 : 0
 
-  const groupedItems = categories.reduce(
+  const groupedItems = GROCERY_CATEGORIES.reduce(
     (acc, category) => {
       acc[category] = groceryList.filter((item) => item.category === category)
       return acc
     },
-    {} as Record<string, GroceryItem[]>,
+    {} as Record<GroceryCategory, GroceryItem[]>,
   )
 
   if (authLoading) return <DashboardLayout><div className="flex justify-center items-center h-screen">Loading...</div></DashboardLayout>
@@ -419,8 +410,8 @@ export default function GroceryPage() {
                   </div>
                   <Progress value={progressPercentage} className="h-2" />
                   <div className="flex justify-between text-sm text-muted-foreground">
-                    <span>Collected: ${checkedCost.toFixed(2)}</span>
-                    <span>Remaining: ${(totalCost - checkedCost).toFixed(2)}</span>
+                    <span>Collected: KES {checkedCost.toFixed(2)}</span>
+                    <span>Remaining: KES {(totalCost - checkedCost).toFixed(2)}</span>
                   </div>
                 </div>
               </CardContent>
@@ -432,47 +423,67 @@ export default function GroceryPage() {
                 <CardTitle className="text-lg">Add Custom Item</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex gap-2 flex-wrap">
-                  <Input
-                    placeholder="Enter item name..."
-                    value={newItem}
-                    onChange={(e) => setNewItem(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && addCustomItem()}
-                    className="flex-1 min-w-0"
-                  />
-                  <Input
-                    placeholder="Quantity"
-                    value={newItemQuantity}
-                    onChange={(e) => setNewItemQuantity(e.target.value)}
-                    className="w-20"
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Price"
-                    value={newItemPrice}
-                    onChange={(e) => setNewItemPrice(Number(e.target.value))}
-                    className="w-20"
-                  />
-                  <select
-                    value={newItemCategory}
-                    onChange={(e) => setNewItemCategory(e.target.value as GroceryItem["category"])}
-                    className="px-3 py-2 border border-input rounded-md bg-background text-foreground"
-                  >
-                    {categories.map((category) => (
-                      <option key={category} value={category}>
-                        {category}
-                      </option>
-                    ))}
-                  </select>
-                  <Button onClick={addCustomItem}>
-                    <Plus className="h-4 w-4" />
-                  </Button>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="md:col-span-2 space-y-2">
+                      <Label htmlFor="item-name">Item Name</Label>
+                      <Input
+                        id="item-name"
+                        placeholder="Enter item name..."
+                        value={newItem}
+                        onChange={(e) => setNewItem(e.target.value)}
+                        onKeyPress={(e) => e.key === "Enter" && addCustomItem()}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="quantity">Quantity</Label>
+                      <Input
+                        id="quantity"
+                        placeholder="Qty"
+                        value={newItemQuantity}
+                        onChange={(e) => setNewItemQuantity(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="price">Price (KES)</Label>
+                      <Input
+                        id="price"
+                        type="number"
+                        placeholder="0.00"
+                        value={newItemPrice}
+                        onChange={(e) => setNewItemPrice(Number(e.target.value))}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="category">Category</Label>
+                      <select
+                        id="category"
+                        value={newItemCategory}
+                        onChange={(e) => setNewItemCategory(e.target.value as GroceryCategory)}
+                        className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground"
+                      >
+                        {GROCERY_CATEGORIES.map((category) => (
+                          <option key={category} value={category}>
+                            {category}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex items-end">
+                      <Button onClick={addCustomItem} className="w-full">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Item
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Shopping List by Category */}
-            {categories.map((category) => {
+            {GROCERY_CATEGORIES.map((category) => {
               const categoryItems = groupedItems[category]
               if (categoryItems.length === 0) return null
 
@@ -503,7 +514,7 @@ export default function GroceryPage() {
                               {item.name}
                             </div>
                             <div className="text-sm text-muted-foreground">
-                              {item.quantity} • ${item.price.toFixed(2)}
+                              {item.quantity} • KES {item.price.toFixed(2)}
                             </div>
                             {item.recipes.length > 0 && (
                               <div className="flex flex-wrap gap-1 mt-1">
@@ -550,11 +561,11 @@ export default function GroceryPage() {
               <CardContent className="space-y-4">
                 <div className="flex justify-between">
                   <span>Total Cost:</span>
-                  <span className="font-semibold">${totalCost.toFixed(2)}</span>
+                  <span className="font-semibold">KES {totalCost.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Budget:</span>
-                  <span className="font-semibold">${budget.toFixed(2)}</span>
+                  <span className="font-semibold">KES {budget.toFixed(2)}</span>
                 </div>
                 <div className="border-t pt-2">
                   <div className="flex justify-between">
@@ -562,7 +573,7 @@ export default function GroceryPage() {
                     <span
                       className={`font-semibold ${budget - totalCost >= 0 ? "text-green-600" : "text-destructive"}`}
                     >
-                      ${(budget - totalCost).toFixed(2)}
+                      KES {(budget - totalCost).toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -596,7 +607,7 @@ export default function GroceryPage() {
                   className="w-full"
                   onClick={() => {
                     const listText = groceryList
-                      .map((item) => `${item.name}: ${item.quantity} ($${item.price.toFixed(2)})`)
+                      .map((item) => `${item.name}: ${item.quantity} (KES ${item.price.toFixed(2)})`)
                       .join("\n")
                     navigator.clipboard.writeText(listText)
                     toast.success("Grocery list copied to clipboard")

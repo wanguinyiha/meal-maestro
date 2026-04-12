@@ -32,6 +32,7 @@ export default function ViewSpoonacularRecipe({ externalId }: { externalId: stri
   const [liveRecipe, setLiveRecipe] = useState<any | null>(null)
   const [loading, setLoading] = useState(true)
   const [isFavorite, setIsFavorite] = useState(false)
+  const [isImporting, setIsImporting] = useState(false)
 
   const recipe = snapshot?.raw_json ?? liveRecipe
 
@@ -95,6 +96,23 @@ export default function ViewSpoonacularRecipe({ externalId }: { externalId: stri
       toast.success(isFavorite ? "Removed from favorites" : "Added to favorites")
     } catch (e: any) {
       toast.error(e?.message || "Failed to update favorite")
+    }
+  }
+
+  const addToPlanAndEdit = async () => {
+    try {
+      setIsImporting(true)
+      const res = await fetch(`/api/spoonacular/import/${encodeURIComponent(externalId)}?addToPlan=1`, {
+        method: "POST",
+      })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(json?.error || "Failed to add to plan")
+      toast.success("Added to plan. Customize servings & ingredient prices next.")
+      router.push(`/recipes/edit/${json.recipe_id}`)
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to add to plan")
+    } finally {
+      setIsImporting(false)
     }
   }
 
@@ -194,9 +212,9 @@ export default function ViewSpoonacularRecipe({ externalId }: { externalId: stri
             </div>
 
             <div className="flex gap-2">
-              <Button className="flex-1" disabled>
+              <Button className="flex-1" onClick={addToPlanAndEdit} disabled={isImporting}>
                 <ListOrdered className="h-4 w-4 mr-1" />
-                Add to Plan (coming soon)
+                {isImporting ? "Adding..." : "Add to Plan"}
               </Button>
             </div>
           </CardContent>

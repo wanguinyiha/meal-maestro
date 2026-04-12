@@ -156,7 +156,7 @@ export default function ViewRecipe({ recipe, onBack }: ViewRecipeProps) {
               </div>
               <div className="flex items-center gap-1 text-muted-foreground">
                 <DollarSign className="h-4 w-4" />
-                <span>${recipe.cost.toFixed(2)}</span>
+                <span>KES {recipe.cost.toFixed(2)}</span>
               </div>
             </div>
             <div className="bg-muted/50 rounded-lg p-4 mb-6">

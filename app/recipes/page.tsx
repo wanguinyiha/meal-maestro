@@ -49,6 +49,9 @@ export default function RecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [onlineRecipes, setOnlineRecipes] = useState<SpoonacularSearchResult[]>([])
   const [onlineLoading, setOnlineLoading] = useState(false)
+  const [onlineRecommended, setOnlineRecommended] = useState<SpoonacularSearchResult[]>([])
+  const [onlineRecommendedLoading, setOnlineRecommendedLoading] = useState(false)
+  const [onlineRecommendationsNonce, setOnlineRecommendationsNonce] = useState(0)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   const supabase = createClient()
@@ -259,6 +262,37 @@ export default function RecipesPage() {
       controller.abort()
       clearTimeout(t)
     }
+  }, [activeTab, authLoading, searchTerm, user, onlineRecommendationsNonce])
+
+  useEffect(() => {
+    let cancelled = false
+    const controller = new AbortController()
+
+    async function run() {
+      if (!user || authLoading) return
+      if (activeTab !== "online") return
+      if (searchTerm.trim()) return
+
+      setOnlineRecommendedLoading(true)
+      try {
+        const res = await fetch(`/api/spoonacular/recommendations`, { signal: controller.signal })
+        const json = await res.json().catch(() => ({}))
+        if (!res.ok) throw new Error(json?.error || "Failed to load recommendations")
+        const results = (json?.results ?? []) as SpoonacularSearchResult[]
+        if (!cancelled) setOnlineRecommended(results)
+      } catch (e: any) {
+        if (e?.name === "AbortError") return
+        toast.error(e?.message || "Failed to load recommendations")
+      } finally {
+        if (!cancelled) setOnlineRecommendedLoading(false)
+      }
+    }
+
+    run()
+    return () => {
+      cancelled = true
+      controller.abort()
+    }
   }, [activeTab, authLoading, searchTerm, user])
 
   const toggleFavorite = async (recipeId: string) => {
@@ -419,7 +453,7 @@ export default function RecipesPage() {
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="my">My Recipes</TabsTrigger>
             <TabsTrigger value="all">All Recipes</TabsTrigger>
-            <TabsTrigger value="online">Online Recipes</TabsTrigger>
+            {/* <TabsTrigger value="online">Online Recipes</TabsTrigger> */}
             <TabsTrigger value="favorites">Favorites</TabsTrigger>
           </TabsList>
           <TabsContent value="all" className="mt-6">
@@ -682,7 +716,74 @@ export default function RecipesPage() {
               </p>
             </div>
 
-            {!searchTerm.trim() ? (
+            {!searchTerm.trim() ? onlineRecommendedLoading ? (
+              <div className="text-center py-12 text-muted-foreground">Loading recommendations...</div>
+            ) : onlineRecommended.length ? (
+              <div>
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="text-xl font-semibold text-foreground">Recommended for you</h3>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setOnlineRecommended([])
+                      setOnlineRecommendationsNonce((n) => n + 1)
+                    }}
+                  >
+                    Refresh
+                  </Button>
+                </div>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {onlineRecommended.map((r) => {
+                    const isFav = externalFavoriteIds.has(String(r.id))
+                    return (
+                      <Card key={r.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                        <div className="relative">
+                          <img src={r.image || "/placeholder.svg"} alt={r.title} className="w-full h-48 object-cover" />
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="absolute top-2 right-2 bg-white/80 hover:bg-white"
+                            onClick={() => toggleExternalFavorite(String(r.id), isFav)}
+                          >
+                            <Heart className={`h-4 w-4 ${isFav ? "fill-red-500 text-red-500" : "text-gray-600"}`} />
+                          </Button>
+                          <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground">online</Badge>
+                        </div>
+
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-lg leading-tight">{r.title}</CardTitle>
+                        </CardHeader>
+
+                        <CardContent className="pt-0">
+                          <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+                            <div className="flex items-center gap-1 text-muted-foreground">
+                              <Clock className="h-4 w-4" />
+                              <span>{r.readyInMinutes ?? 0}m</span>
+                            </div>
+                            <div className="flex items-center gap-1 text-muted-foreground">
+                              <Users className="h-4 w-4" />
+                              <span>{r.servings ?? 0} servings</span>
+                            </div>
+                          </div>
+
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="flex-1"
+                              onClick={() => router.push(`/recipes/spoonacular/${r.id}`)}
+                            >
+                              View Recipe
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )
+                  })}
+                </div>
+              </div>
+            ) : (
               <div className="text-center py-12">
                 <Search className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-foreground mb-2">Search online recipes</h3>
