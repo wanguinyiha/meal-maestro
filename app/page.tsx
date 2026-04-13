@@ -91,7 +91,7 @@ export default function HomePage() {
                 <Link href="/signup">Sign Up <ArrowRight className="ml-2 h-5 w-5" /></Link>
               </Button>
               <Button asChild variant="outline" className="text-lg px-8">
-                <Link href="/login">LogIn</Link>
+                <Link href="/login">Log In</Link>
               </Button>
             </div>
           </div>

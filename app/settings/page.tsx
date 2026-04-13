@@ -528,7 +528,7 @@ export default function SettingsPage() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="profile">Profile</TabsTrigger>
-            <TabsTrigger value="dietary">Dietary</TabsTrigger>
+            {/* <TabsTrigger value="dietary">Dietary</TabsTrigger> */}
             <TabsTrigger value="notifications">Notifications</TabsTrigger>
             <TabsTrigger value="preferences">Preferences</TabsTrigger>
             <TabsTrigger value="account">Account</TabsTrigger>

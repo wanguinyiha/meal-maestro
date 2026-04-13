@@ -453,7 +453,7 @@ export default function RecipesPage() {
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="my">My Recipes</TabsTrigger>
             <TabsTrigger value="all">All Recipes</TabsTrigger>
-            {/* <TabsTrigger value="online">Online Recipes</TabsTrigger> */}
+            <TabsTrigger value="online">Online Recipes</TabsTrigger>
             <TabsTrigger value="favorites">Favorites</TabsTrigger>
           </TabsList>
           <TabsContent value="all" className="mt-6">

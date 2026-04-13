@@ -66,10 +66,10 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
     const servingsRaw = Number(raw?.servings)
     const servings = Number.isFinite(servingsRaw) && servingsRaw > 0 ? servingsRaw : 1
 
-    const calories = nutrientValue(raw, "Calories")
-    const protein_g = nutrientValue(raw, "Protein")
-    const carbs_g = nutrientValue(raw, "Carbohydrates")
-    const fat_g = nutrientValue(raw, "Fat")
+    const calories = Math.round(nutrientValue(raw, "Calories"))
+    const protein_g = Math.round(nutrientValue(raw, "Protein"))
+    const carbs_g = Math.round(nutrientValue(raw, "Carbohydrates"))
+    const fat_g = Math.round(nutrientValue(raw, "Fat"))
 
     const difficulty = difficultyFromMinutes(prep_time_min)
     const category = categoryFromDishTypes(raw)
