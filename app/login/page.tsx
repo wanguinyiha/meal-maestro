@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image"; 
@@ -264,6 +264,21 @@ function LoginForm() {
 // Wrapping component remains simple
 export default function LoginPage() {
   return (
-    <LoginForm />
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-muted/30 flex items-center justify-center p-4">
+          <div className="w-full max-w-5xl">
+            <Card>
+              <CardHeader>
+                <CardTitle>Sign in</CardTitle>
+                <CardDescription>Loading...</CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

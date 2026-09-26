@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image"; // 💡 Import Image component
@@ -36,7 +36,7 @@ function safeInternalPath(path: string | null): string | null {
   return path;
 }
 
-export default function SignupPage() {
+function SignupContent() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -418,5 +418,26 @@ export default function SignupPage() {
         </div> {/* End of grid */}
       </Card>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-muted/30 flex items-center justify-center p-4">
+          <div className="w-full max-w-5xl">
+            <Card>
+              <CardHeader>
+                <CardTitle>Join Meal Maestro</CardTitle>
+                <CardDescription>Loading...</CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
+        </div>
+      }
+    >
+      <SignupContent />
+    </Suspense>
   );
 }
