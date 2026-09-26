@@ -54,6 +54,16 @@ function LoginForm() {
       });
 
       if (error) {
+        if (
+          error.code === "email_not_confirmed" ||
+          /confirm/i.test(error.message)
+        ) {
+          toast.error(
+            "This account hasn't been confirmed yet. Create a new account to continue."
+          );
+          setIsLoading(false);
+          return;
+        }
         toast.error(error.message);
         setIsLoading(false);
         return;

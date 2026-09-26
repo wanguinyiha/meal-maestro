@@ -223,7 +223,7 @@ export default function HomePage() {
           </h2>
           <p className="text-xl opacity-90 mb-10 max-w-3xl mx-auto">
             Join thousands of users who have simplified their meal planning and
-            saved money with Marita's Meal Maestro today.
+            saved money with Meal Maestro today.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild variant="secondary" className="text-lg px-10 font-bold shadow-lg hover:shadow-xl">
@@ -241,7 +241,7 @@ export default function HomePage() {
             <div className="flex items-center gap-2 mb-4 md:mb-0">
               <ChefHat className="h-7 w-7 text-primary" />
               <span className="font-bold text-xl text-foreground">
-                Marita's Meal Maestro
+                Meal Maestro
               </span>
             </div>
             <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
@@ -266,7 +266,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-border text-center text-sm text-muted-foreground">
-            © 2025 Marita's Meal Maestro. All rights reserved.
+            © 2025 Meal Maestro. All rights reserved.
           </div>
         </div>
       </footer>

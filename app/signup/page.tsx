@@ -73,32 +73,44 @@ export default function SignupPage() {
     setIsLoading(true);
 
     try {
-      const emailRedirectTo = `${window.location.origin}/auth/confirm`;
-      const { error } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-        options: {
-          emailRedirectTo,
-          data: {
-            full_name: `${formData.firstName} ${formData.lastName}`,
-            dietary_preference: formData.dietaryPreference || "none",
-          },
-        },
+      const nextPath = redirectedFrom || "/recipes";
+
+      // Create the account on the server with the email already confirmed,
+      // so no verification/confirmation step is needed.
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          fullName: `${formData.firstName} ${formData.lastName}`,
+          dietaryPreference: formData.dietaryPreference || "none",
+        }),
       });
 
-      if (error) {
-        toast.error(error.message);
+      if (!res.ok) {
+        const result = await res.json().catch(() => ({}));
+        toast.error(result.error || "Failed to create account");
         setIsLoading(false);
         return;
       }
 
-      // Supabase email confirmation flow
-      toast.success("Account created! Check your email to confirm your account.");
-      const checkEmailUrl = new URL("/auth/check-email", window.location.origin);
-      checkEmailUrl.searchParams.set("email", formData.email);
-      if (redirectedFrom) checkEmailUrl.searchParams.set("redirectedFrom", redirectedFrom);
+      // Sign in immediately and go straight to the app.
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (signInError) {
+        toast.error(signInError.message);
+        setIsLoading(false);
+        router.push("/login");
+        return;
+      }
+
+      toast.success("Account created! Welcome to Meal Maestro.");
       setIsLoading(false);
-      router.push(checkEmailUrl.pathname + checkEmailUrl.search);
+      router.push(nextPath);
     } catch (error) {
       toast.error("An error occurred during signup");
       setIsLoading(false);

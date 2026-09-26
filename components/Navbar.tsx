@@ -22,7 +22,7 @@ export default function Navbar() {
           <Link href="/" className="flex items-center gap-2">
             <ChefHat className="h-8 w-8 text-primary" />
             <span className="font-bold text-xl text-foreground">
-              Marita's Meal Maestro
+              Meal Maestro
             </span>
           </Link>
           <div className="hidden md:flex items-center gap-6">

@@ -6,7 +6,7 @@ import Providers from './Providers'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Maritas Meal Maestro',
+  title: 'Meal Maestro',
 }
 
 export default function RootLayout({
