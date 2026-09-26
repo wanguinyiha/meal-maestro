@@ -244,26 +244,6 @@ export default function HomePage() {
                 Meal Maestro
               </span>
             </div>
-            <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-              <Link
-                href="/privacy"
-                className="hover:text-foreground transition-colors"
-              >
-                Privacy Policy
-              </Link>
-              <Link
-                href="/terms"
-                className="hover:text-foreground transition-colors"
-              >
-                Terms of Service
-              </Link>
-              <Link
-                href="/support"
-                className="hover:text-foreground transition-colors"
-              >
-                Support Center
-              </Link>
-            </div>
           </div>
           <div className="mt-8 pt-8 border-t border-border text-center text-sm text-muted-foreground">
             © 2025 Meal Maestro. All rights reserved.
